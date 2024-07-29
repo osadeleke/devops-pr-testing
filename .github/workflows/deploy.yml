@@ -1,0 +1,26 @@
+name: Deploy Flask PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Use custom PR deploy action
+        uses: ./.github/actions/pr-deploy
+        with:
+          server_host: ${{ secrets.SERVER_HOST }}
+          server_username: ${{ secrets.SERVER_USERNAME }}
+          server_password: ${{ secrets.SERVER_PASSWORD }}
+          server_port: ${{ secrets.SERVER_PORT }}
+          dir: '.'
+          dockerfile: 'Dockerfile'
+          start_command: 'flask run --host=0.0.0.0'
+          exposed_port: 5000
+          env: 'FLASK_ENV=development'
